@@ -1,0 +1,35 @@
+'''{r}
+# A way to change data time units
+ ## floor or round the datetime to other intervals (0.1s in this example)
+ df <-
+   df$record_time %>%
+   floor_date(unit = "0.1s") %>%
+   mutate(df, record_time = .)
+ df_10hrz <-
+   df %>%
+   group_by(record_time) %>%
+   select(x_axis, y_axis, z_axis) %>%
+   summarise(
+     x_axis = mean(x_axis),
+     y_axis = mean(y_axis),
+     z_axis = mean(z_axis)
+   )
+   '''
+   
+# Create an empty data frame with as may column as you want. Here I needed 3 columns
+
+final_df <- matrix(nrow = 0 , ncol = 3 ) %>%  as.data.frame()
+# Name the columns if you want
+colnames(final_df) <- c("object" , "probability", "postal_code")
+names <- list.files(path = "output/", pattern = "*.txt" , full.names = TRUE)
+fnames %>% purrr::map(.,function(file_name){
+ working_df <- data.table::fread(file_name) # read each file
+     # A meesy way to get zipcode, angle, degree from filename
+     working_df$postal_code <- str_split(str_split(file_name,"_")[[1]][1],"/")[[1]][2]
+     working_df$angle <- str_split(x,"_")[[1]][2]
+     working_df$degree <- str_split(str_split(x,"_")[[1]][3],"\\.")[[1]][1]
+    # Name your columns if necessary
+     colnames(working_df) <- c("object" , "probability", "postal_code")
+     final_df <<- rbind(final_df, working_df)
+ }
+})
